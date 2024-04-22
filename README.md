@@ -1,6 +1,6 @@
 # CVE Details summary
 
-Python script to generate a summary for a CVE Details search.
+Python script to summarize the data retrieved from a search at CVEDetails.com
 
 # Usage
 ```
