@@ -2,6 +2,12 @@
 
 Python script to summarize the data retrieved from a search at CVEDetails.com
 
+# Installation
+Install the required packages
+```
+pip install -r requirements.txt
+```
+
 # Usage
 ```
 python cvedetails-summary.py <URL>
