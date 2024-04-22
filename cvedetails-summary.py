@@ -7,6 +7,7 @@ def scrape_vulnerabilities(url, description=False):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
     }
+
     https = "https://" if "https://" in url else "http://"
     domain = url.replace(https, "").split("/")[0]
     
@@ -23,7 +24,6 @@ def scrape_vulnerabilities(url, description=False):
             total_vulnerabilities = paging_div.find('div', class_='ssc-text-secondary').text.strip().split()[0]
 
             print("Total vulnerabilities found:", total_vulnerabilities)
-            print()
             
             pagination_links = paging_div.find_all('a')
 
