@@ -26,12 +26,33 @@ def scrape_vulnerabilities(url, description=False):
             print("Total vulnerabilities found:", total_vulnerabilities)
             
             pagination_links = paging_div.find_all('a')
+            if len(pagination_links) > 0:
 
-            for link in pagination_links:
+                for link in pagination_links:
 
-                vulns_page_response = requests.get(https + domain + link.get('href'), headers=headers)
-                vulns_page_soup = BeautifulSoup(vulns_page_response.content, 'html.parser')
-                vulns_page_vulnerabilities_div = vulns_page_soup.find('div', id='searchresults')
+                    vulns_page_response = requests.get(https + domain + link.get('href'), headers=headers)
+                    vulns_page_soup = BeautifulSoup(vulns_page_response.content, 'html.parser')
+                    vulns_page_vulnerabilities_div = vulns_page_soup.find('div', id='searchresults')
+                
+                    vulnerability_entries = vulns_page_vulnerabilities_div.find_all('div', class_='border-top py-3 px-2 hover-bg-light')
+                    
+                    for entry in vulnerability_entries:
+                        cve_id = entry.find('h3').text.strip()
+                        
+                        cvss_score = entry.find('div', class_='cvssbox').text.strip()
+
+                        exploit_exists = entry.find('div', title='Public exploit exists')
+                        exploit_info = "(Public exploit available)" if exploit_exists else ""
+                        
+                        cve_description = entry.find('div', class_='cvesummarylong').text.strip()
+                        
+                        print(f"{cve_id} (Max CVSS:  {cvss_score}) {exploit_info}")
+                        if description:
+                            print("- Description:", cve_description)
+                            print()
+            
+            else:
+                vulns_page_vulnerabilities_div = soup.find('div', id='searchresults')
             
                 vulnerability_entries = vulns_page_vulnerabilities_div.find_all('div', class_='border-top py-3 px-2 hover-bg-light')
                 
@@ -49,7 +70,7 @@ def scrape_vulnerabilities(url, description=False):
                     if description:
                         print("- Description:", cve_description)
                         print()
-                    
+            
         else:
             print("No vulnerabilities found on the page.")
     else:
