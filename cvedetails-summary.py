@@ -25,7 +25,7 @@ def scrape_vulnerabilities(url, description=False):
 
             print("Total vulnerabilities found:", total_vulnerabilities)
             
-            pagination_links = paging_div.find_all('a')
+            pagination_links = paging_div.find_all('a', attrs={"title": "List of security vulnerabilities, CVEs"})
             if len(pagination_links) > 0:
 
                 for link in pagination_links:
@@ -52,6 +52,7 @@ def scrape_vulnerabilities(url, description=False):
                             print()
             
             else:
+                print("into else")
                 vulns_page_vulnerabilities_div = soup.find('div', id='searchresults')
             
                 vulnerability_entries = vulns_page_vulnerabilities_div.find_all('div', class_='border-top py-3 px-2 hover-bg-light')
