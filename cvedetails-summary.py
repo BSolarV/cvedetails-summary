@@ -2,7 +2,7 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 
-def scrape_vulnerabilities(url, description=False):
+def scrape_vulnerabilities(url, description=False, publicExploitable=False):
 
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
@@ -45,14 +45,15 @@ def scrape_vulnerabilities(url, description=False):
                         exploit_info = "(Public exploit available)" if exploit_exists else ""
                         
                         cve_description = entry.find('div', class_='cvesummarylong').text.strip()
+
+                        if not publicExploitable or not not exploit_exists:
                         
-                        print(f"{cve_id} (Max CVSS:  {cvss_score}) {exploit_info}")
-                        if description:
-                            print("- Description:", cve_description)
-                            print()
+                            print(f"{cve_id} (Max CVSS:  {cvss_score}) {exploit_info}")
+                            if description:
+                                print("- Description:", cve_description)
+                                print()
             
             else:
-                print("into else")
                 vulns_page_vulnerabilities_div = soup.find('div', id='searchresults')
             
                 vulnerability_entries = vulns_page_vulnerabilities_div.find_all('div', class_='border-top py-3 px-2 hover-bg-light')
@@ -67,10 +68,11 @@ def scrape_vulnerabilities(url, description=False):
                     
                     cve_description = entry.find('div', class_='cvesummarylong').text.strip()
                     
-                    print(f"{cve_id} (Max CVSS:  {cvss_score}) {exploit_info}")
-                    if description:
-                        print("- Description:", cve_description)
-                        print()
+                    if not publicExploitable or not not exploit_exists:
+                        print(f"{cve_id} (Max CVSS:  {cvss_score}) {exploit_info}")
+                        if description:
+                            print("- Description:", cve_description)
+                            print()
             
         else:
             print("No vulnerabilities found on the page.")
@@ -82,10 +84,11 @@ def main():
     
     parser.add_argument("url", help="URL of the page containing CVE information")
     parser.add_argument("-d", "--description", action='store_true', help="Should the summary includes the description of the CVE.")
+    parser.add_argument("-x", "--public-exploitable", action='store_true', help="List only the vulnerabilities with public exploit.")
     
     args = parser.parse_args()
     
-    scrape_vulnerabilities(args.url, args.description)
+    scrape_vulnerabilities(args.url, args.description, args.public_exploitable)
 
 if __name__ == "__main__":
     main()
